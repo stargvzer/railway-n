@@ -1,8 +1,10 @@
 import telebot
+import random
+import os
+from bs4 import BeautifulSoup
+import threading
 import kol
-import schedule
-import time
-from threading import Thread
+
 
 bot = telebot.TeleBot(kol.token)
 
@@ -15,33 +17,45 @@ def handle_start(message):
 
 # Обработчик сообщений, содержащих команду /request или ключевое слово
 @bot.message_handler(
-    func=lambda message: message.text and ('/meh' in message.text or 'шерсть' in message.text.lower()))
+    func=lambda message: message.text and ('/meh' in message.text or 'Танк из озера, скажи свою мудрость' in message.text.lower()))
 def handle_request(message):
     bot.send_message(message.chat.id, kol.random_message())
 
 
-# Функция для отправки случайного сообщения в конференцию
+# Путь к HTML-файлу с историей чата
+html_file = 'C://Users//dim//Documents//history.html'
+
+
+# Функция для чтения HTML-файла и извлечения сообщений
+def get_messages_from_html():
+    with open(html_file, 'r', encoding='utf-8') as file:
+        content = file.read()
+        soup = BeautifulSoup(content, 'html.parser')
+
+        # Находим все элементы с классом 'text', которые содержат сообщения
+        messages = [div.get_text(strip=True) for div in soup.find_all('div', class_='text')]
+        return messages
+
+
+# Функция для выбора случайного сообщения и отправки его в чат
 def send_random_message():
-    # Здесь нужно указать chat_id вашей конференции
-    chat_id = "-1001507836344"
-    bot.send_message(chat_id, kol.random_message())
+    chat_id = '<ваш_chat_id>'  # Замените на ID вашей группы
+    messages = get_messages_from_html()
+
+    if messages:
+        random_message = random.choice(messages)  # Выбираем случайное сообщение
+        bot.send_message(chat_id, random_message)  # Отправляем сообщение в чат
+    else:
+        bot.send_message(chat_id, "Не удалось найти сообщения в файле.")
 
 
-# Планирование задачи каждые 4 часа
-def schedule_message_posting():
-    schedule.every(30).minutes.do(send_random_message)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # Проверяем задачи каждую минуту
+# Функция для планирования отправки сообщений раз в час
+def schedule_messages():
+    send_random_message()  # Отправляем сообщение сразу
+    threading.Timer(3600, schedule_messages).start()  # Повторяем через 1 час
 
 
-# Запускаем планирование в отдельном потоке, чтобы бот мог параллельно работать
-def start_scheduler():
-    scheduler_thread = Thread(target=schedule_message_posting)
-    scheduler_thread.start()
-
-
+# Запуск бота и планирование сообщений
 if __name__ == '__main__':
-    start_scheduler()  # Запускаем планировщик
-    bot.polling(none_stop=True)  # Запускаем бота
+    schedule_messages()  # Запускаем планирование
+    bot.polling(none_stop=True)
