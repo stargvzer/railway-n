@@ -40,7 +40,7 @@ def get_messages_from_html():
 
 # Функция для выбора случайного сообщения и отправки его в чат
 def send_random_message():
-    chat_id = '<ваш_chat_id>'  # Замените на ID вашей группы
+    chat_id = '-1001507836344'  # Замените на ID вашей группы
     messages = get_messages_from_html()
 
     if messages:
