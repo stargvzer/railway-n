@@ -9,16 +9,23 @@ bot = telebot.TeleBot(kol.token)
 def handle_start(message):
     bot.send_message(message.chat.id, kol.startAnswer)
 
+# Обработчик сообщений с несколькими условиями
 @bot.message_handler(func=lambda message: message.text and (
     '/meh' in message.text.lower() or
     'танк из озера, скажи свою мудрость' in message.text.lower() or
     'мать' in message.text.lower() or
-    'шерст' in message.text.lower() # Добавили новое условие
+    'шерст' in message.text.lower() or
+    'мудрость от бабуина' in message.text.lower()  # Добавили новое условие
 ))
 def handle_request(message):
-    random_message = kol.random_message()  # Получаем случайное сообщение
-    bot.send_message(message.chat.id, random_message)
+    # Проверяем, какое ключевое слово/фраза была использована
+    if 'мудрость от бабуина' in message.text.lower():
+        prefix = "Шведский бабуин сказал: "  # Фраза для "мудрость от бабуина"
+    else:
+        prefix = "Мудрый танк из озера сказал: "  # Фраза по умолчанию
 
+    random_message = kol.random_message()  # Получаем случайное сообщение
+    bot.send_message(message.chat.id, f"{prefix}{random_message}")  # Отправляем сообщение с нужной фразой
 
 # Функция для отправки случайного сообщения в чат
 def send_random_message():
