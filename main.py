@@ -3,7 +3,7 @@ import random
 from bs4 import BeautifulSoup
 import threading
 import kol
-
+import os
 
 bot = telebot.TeleBot(kol.token)
 
@@ -22,7 +22,8 @@ def handle_request(message):
 
 
 # Путь к HTML-файлу с историей чата
-html_file = 'projects/history.html'
+current_dir = os.path.dirname(os.path.abspath(__file__))
+html_file = os.path.join(current_dir, 'history.html')
 
 
 
