@@ -42,7 +42,7 @@ def handle_start(message):
 # Обработчик сообщений, содержащих команду /meh или ключевое слово
 @bot.message_handler(func=lambda message: message.text and (
         '/meh' in message.text or
-        'Танк из озера' in message.text.lower()
+        'шерстушение' in message.text.lower()
     ))
 def handle_request(message):
     random_message = get_random_message()  # Получаем случайное сообщение
@@ -52,7 +52,10 @@ def handle_request(message):
 def send_random_message():
     chat_id = '-1001507836344'  # Замените на ID вашей группы
     random_message = get_random_message()  # Получаем случайное сообщение
-    bot.send_message(chat_id, random_message)  # Отправляем сообщение в чат
+
+    # Добавляем фразу к сообщению
+    message_to_send = f"Мудрый танк из озера сказал: {random_message}"
+    bot.send_message(chat_id, message_to_send)  # Отправляем сообщение в чат
 
 # Функция для планирования отправки сообщений раз в час
 def schedule_messages():
