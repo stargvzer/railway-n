@@ -57,7 +57,7 @@ def send_random_message():
 # Функция для планирования отправки сообщений раз в час
 def schedule_messages():
     send_random_message()  # Отправляем сообщение сразу
-    threading.Timer(3600, schedule_messages).start()  # Повторяем через 1 час
+    threading.Timer(1800, schedule_messages).start()  # Повторяем через 1 час
 
 # Запуск бота и планирование сообщений
 if __name__ == '__main__':
