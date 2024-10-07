@@ -1,6 +1,5 @@
 import telebot
 import random
-import os
 from bs4 import BeautifulSoup
 import threading
 import kol
