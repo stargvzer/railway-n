@@ -22,7 +22,7 @@ def handle_request(message):
 
 
 # Путь к HTML-файлу с историей чата
-html_file = 'history.html'
+html_file = 'projects/history.html'
 
 
 
