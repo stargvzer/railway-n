@@ -9,13 +9,16 @@ bot = telebot.TeleBot(kol.token)
 def handle_start(message):
     bot.send_message(message.chat.id, kol.startAnswer)
 
-# Обработчик сообщений, содержащих команду или ключевое слово
 @bot.message_handler(func=lambda message: message.text and (
-    '/meh' in message.text.lower() or 'танк из озера, скажи свою мудрость' or 'мать' in message.text.lower()
+    '/meh' in message.text.lower() or
+    'танк из озера, скажи свою мудрость' in message.text.lower() or
+    'мать' in message.text.lower() or
+    'шерст' in message.text.lower() # Добавили новое условие
 ))
 def handle_request(message):
     random_message = kol.random_message()  # Получаем случайное сообщение
     bot.send_message(message.chat.id, random_message)
+
 
 # Функция для отправки случайного сообщения в чат
 def send_random_message():
