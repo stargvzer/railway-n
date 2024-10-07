@@ -22,7 +22,7 @@ def handle_request(message):
 
 
 # Путь к HTML-файлу с историей чата
-html_file = 'C:\Users\dim\Documents\history.html'
+html_file = 'C:\\Users\\dim\\Documents\\history.html'
 
 
 
