@@ -42,7 +42,7 @@ def handle_start(message):
 # Обработчик сообщений, содержащих команду /meh или ключевое слово
 @bot.message_handler(func=lambda message: message.text and (
         '/meh' in message.text or
-        'Танк из озера, скажи свою мудрость' in message.text.lower()
+        'Танк из озера' in message.text.lower()
     ))
 def handle_request(message):
     random_message = get_random_message()  # Получаем случайное сообщение
