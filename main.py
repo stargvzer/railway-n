@@ -14,16 +14,22 @@ def handle_start(message):
     bot.send_message(message.chat.id, kol.startAnswer)
 
 
-# Обработчик сообщений, содержащих команду /request или ключевое слово
-@bot.message_handler
-    func=lambda message: message.text and ('/meh' in message.text or 'Танк из озера, скажи свою мудрость' in message.text.lower()))
+@bot.message_handler(
+    func=lambda message: message.text and (
+        '/meh' in message.text or
+        'Танк из озера, скажи свою мудрость' in message.text.lower()
+    )
+)
 def handle_request(message):
     bot.send_message(message.chat.id, kol.random_message())
+
+
 
 
 # Путь к HTML-файлу с историей чата
 current_dir = os.path.dirname(os.path.abspath(__file__))
 html_file = os.path.join(current_dir, 'history.html')
+
 
 
 
