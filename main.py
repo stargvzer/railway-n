@@ -5,7 +5,7 @@ import threading
 import os
 
 # Ваш Telegram-токен вместо kol.token
-TELEGRAM_TOKEN = '5257043486:AAFgddkVAq9Ls0EwjMLi8PFlGjj_uKI3zrw'
+TELEGRAM_TOKEN = '5257043486:AAFgddkVAq9Ls0EwjMLi8PFlGjj_uKI3zrw'  # Замените на ваш токен
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
@@ -28,18 +28,21 @@ def get_messages_from_html():
         return []
 
 
+# Функция для выбора случайного сообщения
+def get_random_message():
+    messages = get_messages_from_html()
+    if messages:
+        return random.choice(messages)
+    return "Не удалось найти сообщения в файле."
+
+
 # Обработчик команды /start
 @bot.message_handler(commands=['start'])
 def handle_start(message):
-    messages = get_messages_from_html()
-    if messages:
-        random_message = random.choice(messages)  # Выбираем случайное сообщение
-        bot.send_message(message.chat.id, random_message)
-    else:
-        bot.send_message(message.chat.id, "История сообщений не найдена.")
+    random_message = get_random_message()  # Получаем случайное сообщение
+    bot.send_message(message.chat.id, random_message)
 
 
-# Обработчик сообщений, содержащих команду /request или ключевое слово
 @bot.message_handler(
     func=lambda message: message.text and (
         '/meh' in message.text or
@@ -47,24 +50,15 @@ def handle_start(message):
     )
 )
 def handle_request(message):
-    messages = get_messages_from_html()
-    if messages:
-        random_message = random.choice(messages)  # Выбираем случайное сообщение
-        bot.send_message(message.chat.id, random_message)
-    else:
-        bot.send_message(message.chat.id, "Не удалось найти сообщения в файле.")
+    random_message = get_random_message()  # Получаем случайное сообщение
+    bot.send_message(message.chat.id, random_message)
 
 
-# Функция для выбора случайного сообщения и отправки его в чат
+# Функция для отправки случайного сообщения в чат
 def send_random_message():
     chat_id = '-1001507836344'  # Замените на ID вашей группы
-    messages = get_messages_from_html()
-
-    if messages:
-        random_message = random.choice(messages)  # Выбираем случайное сообщение
-        bot.send_message(chat_id, random_message)  # Отправляем сообщение в чат
-    else:
-        bot.send_message(chat_id, "Не удалось найти сообщения в файле.")
+    random_message = get_random_message()  # Получаем случайное сообщение
+    bot.send_message(chat_id, random_message)  # Отправляем сообщение в чат
 
 
 # Функция для планирования отправки сообщений раз в час
