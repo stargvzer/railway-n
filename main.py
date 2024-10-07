@@ -11,7 +11,7 @@ def handle_start(message):
 
 # Обработчик сообщений, содержащих команду или ключевое слово
 @bot.message_handler(func=lambda message: message.text and (
-    '/meh' in message.text.lower() or 'танк из озера, скажи свою мудрость' in message.text.lower()
+    '/meh' in message.text.lower() or 'танк из озера, скажи свою мудрость' or 'мать' in message.text.lower()
 ))
 def handle_request(message):
     random_message = kol.random_message()  # Получаем случайное сообщение
@@ -29,7 +29,7 @@ def send_random_message():
 # Функция для планирования отправки сообщений раз в час
 def schedule_messages():
     send_random_message()  # Отправляем сообщение сразу
-    threading.Timer(3600, schedule_messages).start()  # Повторяем через 1 час
+    threading.Timer(1800, schedule_messages).start()  # Повторяем через 1 час
 
 # Запуск бота и планирование сообщений
 if __name__ == '__main__':
