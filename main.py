@@ -4,6 +4,8 @@ import threading
 import requests
 
 
+
+
 bot = telebot.TeleBot(kol.token)
 
 def keep_alive():
