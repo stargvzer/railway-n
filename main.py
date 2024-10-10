@@ -1,8 +1,17 @@
 import telebot
 import kol
 import threading
+import requests
+
 
 bot = telebot.TeleBot(kol.token)
+
+def keep_alive():
+    # Периодический запрос к самому себе, чтобы контейнер не останавливался
+    threading.Timer(300, keep_alive).start()  # Каждые 5 минут
+    requests.get("https://railway-n-istoriya.up.railway.app")  # Замените на ваш Railway URL
+
+keep_alive()
 
 # Обработчик команды /start
 @bot.message_handler(commands=['start'])
