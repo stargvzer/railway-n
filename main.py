@@ -8,6 +8,9 @@ import requests
 
 bot = telebot.TeleBot(kol.token)
 
+# Путь к папке со стикерами
+sticker_folder = 'stickers'  # Замените на реальный путь к вашей папке со стикерами
+
 def keep_alive():
     # Периодический запрос к самому себе, чтобы контейнер не останавливался
     threading.Timer(300, keep_alive).start()  # Каждые 5 минут
@@ -37,6 +40,24 @@ def handle_request(message):
 
     random_message = kol.random_message()  # Получаем случайное сообщение
     bot.send_message(message.chat.id, f"{prefix}{random_message}")  # Отправляем сообщение с нужной фразой
+
+    # Функция для отправки случайного стикера
+    def send_random_sticker(chat_id):
+        try:
+            # Получаем список всех файлов в директории
+            stickers = [f for f in os.listdir(sticker_folder) if os.path.isfile(os.path.join(sticker_folder, f))]
+
+            if stickers:
+                random_sticker = random.choice(stickers)  # Выбираем случайный стикер
+                sticker_path = os.path.join(sticker_folder, random_sticker)
+
+                # Отправляем стикер
+                with open(sticker_path, 'rb') as sticker_file:
+                    bot.send_sticker(chat_id, sticker_file)
+            else:
+                bot.send_message(chat_id, "Не удалось найти стикеры в папке.")
+        except Exception as e:
+            bot.send_message(chat_id, f"Ошибка при отправке стикера: {str(e)}")
 
 # Функция для отправки случайного сообщения в чат
 def send_random_message():
