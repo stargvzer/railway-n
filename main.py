@@ -52,6 +52,7 @@ def handle_random_sticker(message):
 def handle_image_search(message):
     chat_id = message.chat.id
     query = message.text.replace('/image', '').strip()  # Убираем команду из текста
+
     if query:
         bot.send_message(chat_id, f"Ищу изображение по запросу: {query}")
         image_url = google_image_search(query)
