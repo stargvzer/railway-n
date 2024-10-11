@@ -4,14 +4,33 @@ import threading
 import requests
 import random
 import os
+from googleapiclient.discovery import build
 
 bot = telebot.TeleBot(kol.token)
 
 # Путь к папке со стикерами
 sticker_folder = 'stickers'  # Замените на реальный путь к вашей папке со стикерами
 
+# Google API credentials
+GOOGLE_API_KEY = 'AIzaSyC9l5DD7Di2WzwnsKDPeN4pNH5S1KSsSC8'  # Замените на ваш API-ключ
+CX = 'botsearch-43831'  # Замените на ваш идентификатор поисковой системы
+
+def google_image_search(query):
+    try:
+        service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
+        result = service.cse().list(q=query, cx=CX, searchType='image', num=10).execute()
+        if 'items' in result:
+            # Возьмем случайную картинку из результата
+            image_url = random.choice(result['items'])['link']
+            return image_url
+        else:
+            return None
+    except Exception as e:
+        print(f"Ошибка при поиске изображения: {e}")
+        return None
+
+# Периодический запрос к самому себе, чтобы контейнер не останавливался
 def keep_alive():
-    # Периодический запрос к самому себе, чтобы контейнер не останавливался
     threading.Timer(300, keep_alive).start()  # Каждые 5 минут
     requests.get("https://railway-n-istoriya.up.railway.app")  # Замените на ваш Railway URL
 
@@ -28,6 +47,21 @@ def handle_random_sticker(message):
     chat_id = message.chat.id
     send_random_sticker(chat_id)
 
+# Обработчик команды для поиска и отправки изображения (команда /image)
+@bot.message_handler(commands=['image'])
+def handle_image_search(message):
+    chat_id = message.chat.id
+    query = message.text.replace('/image', '').strip()  # Убираем команду из текста
+    if query:
+        bot.send_message(chat_id, f"Ищу изображение по запросу: {query}")
+        image_url = google_image_search(query)
+        if image_url:
+            bot.send_photo(chat_id, image_url)
+        else:
+            bot.send_message(chat_id, "Извините, не удалось найти изображение.")
+    else:
+        bot.send_message(chat_id, "Пожалуйста, укажите запрос для поиска изображения.")
+
 # Обработчик сообщений для отправки случайного стикера по текстовой команде "открытка от бабуина"
 @bot.message_handler(func=lambda message: 'открытка от бабуина' in message.text.lower())
 def handle_baboon_postcard(message):
@@ -37,14 +71,10 @@ def handle_baboon_postcard(message):
 # Функция для отправки случайного стикера
 def send_random_sticker(chat_id):
     try:
-        # Получаем список всех файлов в директории
         stickers = [f for f in os.listdir(sticker_folder) if os.path.isfile(os.path.join(sticker_folder, f))]
-
         if stickers:
-            random_sticker = random.choice(stickers)  # Выбираем случайный стикер
+            random_sticker = random.choice(stickers)
             sticker_path = os.path.join(sticker_folder, random_sticker)
-
-            # Отправляем стикер
             with open(sticker_path, 'rb') as sticker_file:
                 bot.send_sticker(chat_id, sticker_file)
         else:
@@ -58,44 +88,40 @@ def send_random_sticker(chat_id):
         'танк из озера, скажи свою мудрость' in message.text.lower() or
         'мать' in message.text.lower() or
         'шерст' in message.text.lower() or
-        'мудрость от бабуина' in message.text.lower()  # Добавили новое условие
+        'мудрость от бабуина' in message.text.lower()
 ))
 def handle_request(message):
-    # Проверяем, какое ключевое слово/фраза была использована
     if 'мудрость от бабуина' in message.text.lower():
-        prefix = "Шведский бабуин сказал: "  # Фраза для "мудрость от бабуина"
+        prefix = "Шведский бабуин сказал: "
     else:
-        prefix = "Мудрый танк из озера сказал: "  # Фраза по умолчанию
+        prefix = "Мудрый танк из озера сказал: "
 
-    random_message = kol.random_message()  # Получаем случайное сообщение
-    bot.send_message(message.chat.id, f"{prefix}{random_message}")  # Отправляем сообщение с нужной фразой
+    random_message = kol.random_message()
+    bot.send_message(message.chat.id, f"{prefix}{random_message}")
 
 # Функция для отправки случайного стикера в конференцию раз в час
 def send_random_sticker_to_conference():
-    chat_id = '-1001507836344'  # Замените на ID вашей конференции
+    chat_id = '-1001507836344'
     send_random_sticker(chat_id)
 
 # Функция для планирования отправки случайных стикеров раз в час
 def schedule_sticker_messages():
-    send_random_sticker_to_conference()  # Отправляем стикер сразу
-    threading.Timer(3600, schedule_sticker_messages).start()  # Повторяем через 1 час
+    send_random_sticker_to_conference()
+    threading.Timer(3600, schedule_sticker_messages).start()
 
 # Функция для отправки случайного сообщения в чат
 def send_random_message():
-    chat_id = '-1001507836344'  # Замените на ID вашей группы
-    random_message = kol.random_message()  # Получаем случайное сообщение
-
-    # Добавляем фразу к сообщению
+    chat_id = '-1001507836344'
+    random_message = kol.random_message()
     message_to_send = f"Мудрый танк из озера сказал: {random_message}"
-    bot.send_message(chat_id, message_to_send)  # Отправляем сообщение в чат
+    bot.send_message(chat_id, message_to_send)
 
 # Функция для планирования отправки сообщений раз в час
 def schedule_messages():
-    send_random_message()  # Отправляем сообщение сразу
-    threading.Timer(3600, schedule_messages).start()  # Повторяем через 1 час
+    send_random_message()
+    threading.Timer(3600, schedule_messages).start()
 
-# Запуск бота и планирование сообщений
 if __name__ == '__main__':
-    schedule_sticker_messages()  # Запускаем планирование отправки стикеров раз в час
-    schedule_messages()  # Запускаем планирование сообщений
+    schedule_sticker_messages()
+    schedule_messages()
     bot.polling(none_stop=True)
