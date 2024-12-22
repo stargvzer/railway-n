@@ -11,23 +11,6 @@ bot = telebot.TeleBot(kol.token)
 # Путь к папке со стикерами
 sticker_folder = 'stickers'  # Замените на реальный путь к вашей папке со стикерами
 
-# Google API credentials
-GOOGLE_API_KEY = 'AIzaSyC9l5DD7Di2WzwnsKDPeN4pNH5S1KSsSC8'  # Замените на ваш API-ключ
-CX = '20423518615c349f7'  # Замените на ваш идентификатор поисковой системы
-
-def google_image_search(query):
-    try:
-        service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
-        result = service.cse().list(q=query, cx=CX, searchType='image', num=10).execute()
-        if 'items' in result:
-            # Возьмем случайную картинку из результата
-            image_url = random.choice(result['items'])['link']
-            return image_url
-        else:
-            return None
-    except Exception as e:
-        print(f"Ошибка при поиске изображения: {e}")
-        return None
 
 # Периодический запрос к самому себе, чтобы контейнер не останавливался
 def keep_alive():
